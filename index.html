@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Domain Processor</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+    <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+
+
+</head>
+
+<body>
+    <div id="form-container">
+        <h1 style="text-align: center;">SPF RECORDS MAKER <span style="font-size:17px">V6.3</span></h1>
+        <p style="text-align: center;font-size: 15px;">Make your work easier ..in 30s!</p>
+
+        <!-- <div class="box">
+            <a class="pop_button" href="#popup1">Let me Pop up</a>
+        </div>
+        
+        <div id="popup1" class="overlay">
+            <div class="popup">
+                <a class="close" href="#">&times;</a>
+                <div class="content">
+                    Thank to pop me out of that pop_button, but now i'm done so you can close this window.
+                </div>
+            </div>
+        </div> -->
+
+
+        <div class="coolinput">
+            <label for="domains" class="text">Enter domains or IPs (one per line):</label>
+            <textarea id="domains" rows="4" placeholder="domain1.com&#10;domain2.com&#10;domain3.com&#10;" name="input"
+                class="input"></textarea>
+        </div>
+
+
+
+
+
+
+        <div class="coolinput">
+            <label for="spf_domain" class="text">SPF DOMAIN:</label>
+            <input type="text" id="spf_domain" placeholder="trapish.eu.com.." name="input" class="input">
+        </div>
+
+        <div class="coolinput" id="subdomains-container">
+            <label for="sub_domain1" class="text">Enter Subdomain:</label>
+            <input type="text" id="sub_domain1" placeholder="Random..." name="input" class="input sub_domain">
+        </div>
+
+        <!-- <div id="subdomains-container">
+            <label for="sub_domain1">Enter Subdomain: </label>
+            <input type="text" class="sub_domain" placeholder="Random..">
+        </div> -->
+
+        <label for="spf_domain">Click here to add more subs: </label>
+        <div tabindex="0" class="plusButton" onclick="addSubdomain()">
+            <svg class="plusIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30">
+                <g mask="url(#mask0_21_345)">
+                    <path d="M13.75 23.75V16.25H6.25V13.75H13.75V6.25H16.25V13.75H23.75V16.25H16.25V23.75H13.75Z">
+                    </path>
+                </g>
+            </svg>
+        </div>
+
+
+
+
+
+
+        <label for="groupSize">Enter the number to divide domains: </label>
+        <input type="number" id="groupSize" min="1" value="10">
+
+        <fieldset id="switch radio_1" class="radio">
+            <input checked="" name="switch" id="a:" type="radio" onclick="handleRadioChange('a:')">
+            <label for="a:">a:</label>
+            <input name="switch" id="ip4" type="radio" onclick="handleRadioChange('ip4:')">
+            <label for="ip4">ip4:</label>
+            <input name="switch" id="+ip4" type="radio" onclick="handleRadioChange('+ip4:')">
+            <label for="+ip4">+ip4:</label>
+        </fieldset>
+
+        <div class="custom-alert hide">
+            <!-- <span class="fas fa-exclamation-circle"></span> -->
+            <span class="fas fa-exclamation-circle"></span>
+            <span class="msg"></span>
+            <div class="close-btn">
+                <span class="fas fa-times"></span>
+            </div>
+        </div>
+
+        <!-- New input for IP class -->
+        <div class="additional-option">
+            <label for="ipClass">Enter IP Class (e.g., 8, 16, 24): </label>
+            <input type="text" id="ipClass" placeholder="8 16 24 .. without /" pattern="^[0-9]+$"
+                title="Enter a valid IP class (e.g., 8)">
+        </div>
+
+        <label for="allType">Select Privacy</label>
+        <select id="allType">
+            <option value="-all">-all (Fails)</option>
+            <option value="~all">~all (Softfail)</option>
+            <option value="+all">+all (Passes)</option>
+            <option value="?all">?all (Neutral)</option>
+        </select>
+
+        <button onclick="processDomains(); extractDomainsAndSubdomains();" class="pushable">
+            <span class="shadow"></span>
+            <span class="edge"></span>
+            <span class="front">
+                Create records
+            </span>
+        </button>
+
+        <div class="final">
+
+
+
+            <!--  -->
+            <label for="result">Result:</label>
+            <textarea id="result" readonly></textarea>
+
+            <div class="copy-container">
+                <button class="copy result">
+                    <span data-text-end="Copied!" data-text-initial="Copy to clipboard" class="tooltip"></span>
+                    <span>
+                        <svg xml:space="preserve" style="enable-background:new 0 0 512 512" viewBox="0 0 6.35 6.35"
+                            y="0" x="0" height="20" width="20" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
+                            xmlns="http://www.w3.org/2000/svg" class="clipboard">
+                            <g>
+                                <path fill="currentColor"
+                                    d="M2.43.265c-.3 0-.548.236-.573.53h-.328a.74.74 0 0 0-.735.734v3.822a.74.74 0 0 0 .735.734H4.82a.74.74 0 0 0 .735-.734V1.529a.74.74 0 0 0-.735-.735h-.328a.58.58 0 0 0-.573-.53zm0 .529h1.49c.032 0 .049.017.049.049v.431c0 .032-.017.049-.049.049H2.43c-.032 0-.05-.017-.05-.049V.843c0-.032.018-.05.05-.05zm-.901.53h.328c.026.292.274.528.573.528h1.49a.58.58 0 0 0 .573-.529h.328a.2.2 0 0 1 .206.206v3.822a.2.2 0 0 1-.206.205H1.53a.2.2 0 0 1-.206-.205V1.529a.2.2 0 0 1 .206-.206z">
+                                </path>
+                            </g>
+                        </svg>
+                        <svg xml:space="preserve" style="enable-background:new 0 0 512 512" viewBox="0 0 24 24" y="0"
+                            x="0" height="18" width="18" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
+                            xmlns="http://www.w3.org/2000/svg" class="checkmark">
+                            <g>
+                                <path data-original="#000000" fill="currentColor"
+                                    d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z">
+                                </path>
+                            </g>
+                        </svg>
+                    </span>
+                </button>
+            </div>
+
+
+            <div class="generated">
+
+                <div>
+                    <label for="new_records">Generated Domains:</label>
+                    <textarea id="new_records" readonly></textarea>
+
+                    <button class="copy new-records">
+                        <span data-text-end="Copied!" data-text-initial="Copy to clipboard" class="tooltip"></span>
+                        <span>
+                            <svg xml:space="preserve" style="enable-background:new 0 0 512 512" viewBox="0 0 6.35 6.35"
+                                y="0" x="0" height="20" width="20" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                version="1.1" xmlns="http://www.w3.org/2000/svg" class="clipboard">
+                                <g>
+                                    <path fill="currentColor"
+                                        d="M2.43.265c-.3 0-.548.236-.573.53h-.328a.74.74 0 0 0-.735.734v3.822a.74.74 0 0 0 .735.734H4.82a.74.74 0 0 0 .735-.734V1.529a.74.74 0 0 0-.735-.735h-.328a.58.58 0 0 0-.573-.53zm0 .529h1.49c.032 0 .049.017.049.049v.431c0 .032-.017.049-.049.049H2.43c-.032 0-.05-.017-.05-.049V.843c0-.032.018-.05.05-.05zm-.901.53h.328c.026.292.274.528.573.528h1.49a.58.58 0 0 0 .573-.529h.328a.2.2 0 0 1 .206.206v3.822a.2.2 0 0 1-.206.205H1.53a.2.2 0 0 1-.206-.205V1.529a.2.2 0 0 1 .206-.206z">
+                                    </path>
+                                </g>
+                            </svg>
+                            <svg xml:space="preserve" style="enable-background:new 0 0 512 512" viewBox="0 0 24 24"
+                                y="0" x="0" height="18" width="18" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                version="1.1" xmlns="http://www.w3.org/2000/svg" class="checkmark">
+                                <g>
+                                    <path data-original="#000000" fill="currentColor"
+                                        d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z">
+                                    </path>
+                                </g>
+                            </svg>
+                        </span>
+                    </button>
+                </div>
+
+                <div>
+                    <label for="new_records2" id="inc"></label>
+                    <textarea id="new_records2" readonly></textarea>
+                    <button class="copy new-records2">
+                        <span data-text-end="Copied!" data-text-initial="Copy to clipboard" class="tooltip"></span>
+                        <span>
+                            <svg xml:space="preserve" style="enable-background:new 0 0 512 512" viewBox="0 0 6.35 6.35"
+                                y="0" x="0" height="20" width="20" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                version="1.1" xmlns="http://www.w3.org/2000/svg" class="clipboard">
+                                <g>
+                                    <path fill="currentColor"
+                                        d="M2.43.265c-.3 0-.548.236-.573.53h-.328a.74.74 0 0 0-.735.734v3.822a.74.74 0 0 0 .735.734H4.82a.74.74 0 0 0 .735-.734V1.529a.74.74 0 0 0-.735-.735h-.328a.58.58 0 0 0-.573-.53zm0 .529h1.49c.032 0 .049.017.049.049v.431c0 .032-.017.049-.049.049H2.43c-.032 0-.05-.017-.05-.049V.843c0-.032.018-.05.05-.05zm-.901.53h.328c.026.292.274.528.573.528h1.49a.58.58 0 0 0 .573-.529h.328a.2.2 0 0 1 .206.206v3.822a.2.2 0 0 1-.206.205H1.53a.2.2 0 0 1-.206-.205V1.529a.2.2 0 0 1 .206-.206z">
+                                    </path>
+                                </g>
+                            </svg>
+                            <svg xml:space="preserve" style="enable-background:new 0 0 512 512" viewBox="0 0 24 24"
+                                y="0" x="0" height="18" width="18" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                version="1.1" xmlns="http://www.w3.org/2000/svg" class="checkmark">
+                                <g>
+                                    <path data-original="#000000" fill="currentColor"
+                                        d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z">
+                                    </path>
+                                </g>
+                            </svg>
+                        </span>
+                    </button>
+
+                    <center> <button class="inc_buttons-button">
+                            ALL IN ONE
+                            <div class="icon">
+                                <svg height="24" width="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M0 0h24v24H0z" fill="none"></path>
+                                    <path
+                                        d="M16.172 11l-5.364-5.364 1.414-1.414L20 12l-7.778 7.778-1.414-1.414L16.172 13H4v-2z"
+                                        fill="currentColor"></path>
+                                </svg>
+                            </div>
+                        </button>
+                    </center>
+                </div>
+
+                <div>
+                    <label for="new_records2">ALL IN ONE: (soon)</label>
+                    <textarea id="new_records2" readonly></textarea>
+                    <button class="copy new-records2">
+                        <span data-text-end="Copied!" data-text-initial="Copy to clipboard" class="tooltip"></span>
+                        <span>
+                            <svg xml:space="preserve" style="enable-background:new 0 0 512 512" viewBox="0 0 6.35 6.35"
+                                y="0" x="0" height="20" width="20" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                version="1.1" xmlns="http://www.w3.org/2000/svg" class="clipboard">
+                                <g>
+                                    <path fill="currentColor"
+                                        d="M2.43.265c-.3 0-.548.236-.573.53h-.328a.74.74 0 0 0-.735.734v3.822a.74.74 0 0 0 .735.734H4.82a.74.74 0 0 0 .735-.734V1.529a.74.74 0 0 0-.735-.735h-.328a.58.58 0 0 0-.573-.53zm0 .529h1.49c.032 0 .049.017.049.049v.431c0 .032-.017.049-.049.049H2.43c-.032 0-.05-.017-.05-.049V.843c0-.032.018-.05.05-.05zm-.901.53h.328c.026.292.274.528.573.528h1.49a.58.58 0 0 0 .573-.529h.328a.2.2 0 0 1 .206.206v3.822a.2.2 0 0 1-.206.205H1.53a.2.2 0 0 1-.206-.205V1.529a.2.2 0 0 1 .206-.206z">
+                                    </path>
+                                </g>
+                            </svg>
+                            <svg xml:space="preserve" style="enable-background:new 0 0 512 512" viewBox="0 0 24 24"
+                                y="0" x="0" height="18" width="18" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                version="1.1" xmlns="http://www.w3.org/2000/svg" class="checkmark">
+                                <g>
+                                    <path data-original="#000000" fill="currentColor"
+                                        d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z">
+                                    </path>
+                                </g>
+                            </svg>
+                        </span>
+                    </button>
+
+                </div>
+
+            </div>
+            <br>
+            <h3 style="text-decoration: underline;text-align: center;font-size: 12px;">The include option will be
+                available soon ! <br> Working on it GOOD LUCK </h3>
+
+            <h3
+                style="text-decoration: underline;text-align: center;font-size: 12px; font-weight: 100;padding-top: 15px;padding-bottom: 0;margin: 0;">
+                2024© All rights Reserved for Gladiator Design </h3>
+        </div>
+    </div>
+    <script src="main.js"></script>
+
+</body>
+
+</html>
